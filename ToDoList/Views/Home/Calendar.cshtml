@@ -1,46 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<ToDoViewModel>
 @{
-    int count = 0;
+    int count = 1;
 }
 <style>
     table, th, td {
-      border:1px solid black;
+        border: 1px solid black;
     }
 </style>
 <h1 class="text-center">January</h1>
 <table style="width:100%">
-    @for(int i=0; i < 5; i++)
+    @for (int i = 0; i < 5; i++)
     {
         <tr>
-        @for(int j=0; j < 7; j++)
-        {
-                @if(count == 0)
-                {
-                    <td></td>
-                    count++;
-                }
-                else if (count > 31)
-                {
-                    <td></td>
-                }
-                else
-                {
-                    var date = new DateOnly(2024, 1, count);
-                    <td>
-                    @foreach (ToDo task in Model.Tasks)
+            @for (int j = 0; j < 7; j++)
+            {
+                <td>
+                    @count
+                    @if (count <= 31)
                     {
-                        
-                        @if(task.DueDate.Equals(date)){
-                            @task.Description
+                        var date = new DateTime(2024, 1, count); // Non-nullable DateTime
+                        foreach (var viewModel in Model)
+                        {
+                            foreach (var task in viewModel.Tasks)
+                            {
+                                // Ensure you are checking against a non-nullable DateTime here
+                                if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
+                                {
+                                    <div>@task.Description</div>
+                                }
+                            }
                         }
+                        count++;
                     }
-                    @count</td>
-                    count++;
-                }
-        }
+
+                </td>
+            }
         </tr>
     }
 </table>
-<a asp-controller="Home" asp-action="index" class="btn btn-primary">Go Back Home</a>

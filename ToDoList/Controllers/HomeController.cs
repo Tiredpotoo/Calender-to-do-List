@@ -6,21 +6,22 @@ namespace ToDoList.Controllers
 {
     public class HomeController : Controller
     {
-        private ToDoContext context;
-        public HomeController(ToDoContext ctx) => context = ctx;
+        private ToDoContext _context;
+        private List<ToDoViewModel> _toDoModels = new List<ToDoViewModel>();
+        public HomeController(ToDoContext ctx) => _context = ctx;
 
         public ViewResult Index(string id)
         {
             // load current filters and data needed for filter drop downs in ToDoViewModel
             var model = new ToDoViewModel { 
                 Filters = new Filters(id),
-                Categories = context.Categories.ToList(),
-                Statuses = context.Statuses.ToList(),
+                Categories = _context.Categories.ToList(),
+                Statuses = _context.Statuses.ToList(),
                 DueFilters = Filters.DueFilterValues
             };
 
             // get open tasks from database based on current filters
-            IQueryable<ToDo> query = context.ToDos
+            IQueryable<ToDo> query = _context.ToDos
                 .Include(t => t.Category).Include(t => t.Status);
 
             if (model.Filters.HasCategory) {
@@ -48,10 +49,13 @@ namespace ToDoList.Controllers
         {
             var model = new ToDoViewModel
             {
-                Categories = context.Categories.ToList(),
-                Statuses = context.Statuses.ToList(),
+                Categories = _context.Categories.ToList(),
+                Statuses = _context.Statuses.ToList(),
                 CurrentTask = new ToDo { StatusId = "open" }  // set default value for drop-down
             };
+
+            _toDoModels.Add(model);
+
             return View(model);
         }
 
@@ -60,17 +64,19 @@ namespace ToDoList.Controllers
         {
             if (ModelState.IsValid)
             {
-                context.ToDos.Add(model.CurrentTask);
-                context.SaveChanges();
-                return RedirectToAction("Index");
+                _context.ToDos.Add(model.CurrentTask);
+                _context.SaveChanges();
+                return RedirectToAction("Calendar");  // Redirect to Calendar to see all tasks
             }
             else
             {
-                model.Categories = context.Categories.ToList();
-                model.Statuses = context.Statuses.ToList();
+                // If the model state is not valid, reload necessary data for the form
+                model.Categories = _context.Categories.ToList();
+                model.Statuses = _context.Statuses.ToList();
                 return View(model);
             }
         }
+
 
         [HttpPost]
         public IActionResult Filter(string[] filter)
@@ -82,11 +88,11 @@ namespace ToDoList.Controllers
         [HttpPost]
         public IActionResult MarkComplete([FromRoute]string id, ToDo selected)
         {
-            selected = context.ToDos.Find(selected.Id)!;  // use null-forgiving operator to suppress null warning
+            selected = _context.ToDos.Find(selected.Id)!;  // use null-forgiving operator to suppress null warning
             if (selected != null)
             {
                 selected.StatusId = "closed";
-                context.SaveChanges();
+                _context.SaveChanges();
             }
 
             return RedirectToAction("Index", new { ID = id });
@@ -95,21 +101,32 @@ namespace ToDoList.Controllers
         [HttpPost]
         public IActionResult DeleteComplete(string id)
         {
-            var toDelete = context.ToDos
+            var toDelete = _context.ToDos
                 .Where(t => t.StatusId == "closed").ToList();
 
             foreach(var task in toDelete)
             {
-                context.ToDos.Remove(task);
+                _context.ToDos.Remove(task);
             }
-            context.SaveChanges();
+            _context.SaveChanges();
 
             return RedirectToAction("Index", new { ID = id });
         }
 
         public IActionResult Calendar()
         {
-            return View();
+            var models = new List<ToDoViewModel>();
+            var allTasks = _context.ToDos.Include(t => t.Category).Include(t => t.Status).ToList();
+
+            var model = new ToDoViewModel
+            {
+                Tasks = allTasks
+            };
+
+            models.Add(model);
+
+            return View(models);  // Pass the list of models containing all tasks to the view
         }
+
     }
 }

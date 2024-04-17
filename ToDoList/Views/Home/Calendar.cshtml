@@ -1,0 +1,46 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int count = 0;
+}
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+</style>
+<h1 class="text-center">January</h1>
+<table style="width:100%">
+    @for(int i=0; i < 5; i++)
+    {
+        <tr>
+        @for(int j=0; j < 7; j++)
+        {
+                @if(count == 0)
+                {
+                    <td></td>
+                    count++;
+                }
+                else if (count > 31)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    var date = new DateOnly(2024, 1, count);
+                    <td>
+                    @foreach (ToDo task in Model.Tasks)
+                    {
+                        
+                        @if(task.DueDate.Equals(date)){
+                            @task.Description
+                        }
+                    }
+                    @count</td>
+                    count++;
+                }
+        }
+        </tr>
+    }
+</table>
+<a asp-controller="Home" asp-action="index" class="btn btn-primary">Go Back Home</a>

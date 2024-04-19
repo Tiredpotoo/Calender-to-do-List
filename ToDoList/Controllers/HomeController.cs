@@ -66,7 +66,7 @@ namespace ToDoList.Controllers
             {
                 _context.ToDos.Add(model.CurrentTask);
                 _context.SaveChanges();
-                return RedirectToAction("Calendar");  // Redirect to Calendar to see all tasks
+                return RedirectToAction("January");  // Redirect to Calendar to see all tasks
             }
             else
             {
@@ -112,8 +112,8 @@ namespace ToDoList.Controllers
 
             return RedirectToAction("Index", new { ID = id });
         }
-
-        public IActionResult Calendar()
+        //Calendar things
+        public IActionResult January()
         {
             var models = new List<ToDoViewModel>();
             var allTasks = _context.ToDos.Include(t => t.Category).Include(t => t.Status).ToList();
@@ -127,6 +127,7 @@ namespace ToDoList.Controllers
 
             return View(models);  // Pass the list of models containing all tasks to the view
         }
+
 
     }
 }

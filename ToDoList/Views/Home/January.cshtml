@@ -1,0 +1,49 @@
+﻿@model List<ToDoViewModel>
+@{
+    int count = 0;
+}
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+<h1 class="text-center">January</h1>
+<table style="width:100%">
+    @for (int i = 0; i < 5; i++)
+    {
+        <tr>
+            @for (int j = 0; j < 7; j++)
+            {
+                @if(count == 0)
+                {
+                    <td></td>
+                    count++;
+                }
+                else if (count <= 31)
+                {
+                    var date = new DateTime(2024, 1, count); // Non-nullable DateTime
+                    <td>
+                    @count
+                    @foreach (var viewModel in Model)
+                    {
+                        foreach (var task in viewModel.Tasks)
+                        {   
+                            // Ensure you are checking against a non-nullable DateTime here
+                            if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
+                            {
+                                <div>@task.Description</div>
+                            }
+                        }
+                    }
+                    </td>
+                    count++;
+                }
+                else
+                {
+                    <td></td>
+                }
+            }
+        </tr>
+    }
+</table>
+<a asp-controller="home" asp-action="index" class="btn btn-primary">Go back home</a>

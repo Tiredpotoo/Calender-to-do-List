@@ -1,49 +1,59 @@
 ﻿@model List<ToDoViewModel>
 @{
-    int count = 0;
+    int year = 2024; // Set the year for the calendars
 }
+
 <style>
     table, th, td {
         border: 1px solid black;
     }
 </style>
-<h1 class="text-center">January</h1>
-<table style="width:100%">
-    @for (int i = 0; i < 5; i++)
-    {
-        <tr>
-            @for (int j = 0; j < 7; j++)
-            {
-                @if(count == 0)
+
+@for (int month = 1; month <= 12; month++)
+{
+    <h1 class="text-center">@(new DateTime(year, month, 1).ToString("MMMM"))</h1>
+    <table style="width:100%">
+        @{
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            int dayOfWeek = (int)new DateTime(year, month, 1).DayOfWeek;
+            int count = 0;
+        }
+        @for (int i = 0; i < 6; i++)
+        {
+            <tr>
+                @for (int j = 0; j < 7; j++)
                 {
-                    <td></td>
-                    count++;
-                }
-                else if (count <= 31)
-                {
-                    var date = new DateTime(2024, 1, count); // Non-nullable DateTime
-                    <td>
-                    @count
-                    @foreach (var viewModel in Model)
+                    if (i == 0 && j < dayOfWeek)
                     {
-                        foreach (var task in viewModel.Tasks)
-                        {   
-                            // Ensure you are checking against a non-nullable DateTime here
-                            if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
-                            {
-                                <div>@task.Description</div>
-                            }
-                        }
+                        <td></td>
                     }
-                    </td>
-                    count++;
+                    else if (count < daysInMonth)
+                    {
+                        count++;
+                        var date = new DateTime(year, month, count); // Non-nullable DateTime
+                        <td>
+                            @count
+                            @foreach (var viewModel in Model)
+                            {
+                                foreach (var task in viewModel.Tasks)
+                                {
+                                    // Ensure you are checking against a non-nullable DateTime here
+                                    if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
+                                    {
+                                        <div>@task.Description</div>
+                                    }
+                                }
+                            }
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
                 }
-                else
-                {
-                    <td></td>
-                }
-            }
-        </tr>
-    }
-</table>
+            </tr>
+        }
+    </table>
+}
+
 <a asp-controller="home" asp-action="index" class="btn btn-primary">Go back home</a>

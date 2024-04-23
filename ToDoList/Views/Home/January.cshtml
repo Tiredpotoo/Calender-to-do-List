@@ -7,6 +7,9 @@
     table, th, td {
         border: 1px solid black;
     }
+    td {
+        height: 50px; /* Adjust the height of each cell */
+    }
 </style>
 
 @for (int month = 1; month <= 12; month++)
@@ -18,7 +21,7 @@
             int dayOfWeek = (int)new DateTime(year, month, 1).DayOfWeek;
             int count = 0;
         }
-        @for (int i = 0; i < 6; i++)
+        @for (int i = 0; i < 5; i++)
         {
             <tr>
                 @for (int j = 0; j < 7; j++)
@@ -41,6 +44,7 @@
                                     if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
                                     {
                                         <div>@task.Description</div>
+
                                     }
                                 }
                             }

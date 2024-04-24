@@ -4,18 +4,31 @@
 }
 
 <style>
-    table, th, td {
-        border: 1px solid black;
+    table {
+        width: 100%;
+        border-collapse: collapse;
     }
-    td {
-        height: 50px; /* Adjust the height of each cell */
+
+    th, td {
+        border: 1px solid black;
+        height: 75px;
+        width: calc(100% / 7); /* Distribute width evenly among the 7 days */
+        vertical-align: top; /* Align content to the top of the cell */
+    }
+
+    .task {
+        max-height: 50px; /* Limit the height of the task content */
+        overflow: hidden; /* Hide overflow if content exceeds max-height */
+        text-overflow: ellipsis; /* Show ellipsis (...) for truncated content */
+        white-space: normal; /* Allow text to wrap */
+        word-wrap: break-word; /* Break words that exceed the cell width */
     }
 </style>
 
 @for (int month = 1; month <= 12; month++)
 {
     <h1 class="text-center">@(new DateTime(year, month, 1).ToString("MMMM"))</h1>
-    <table style="width:100%">
+    <table>
         @{
             int daysInMonth = DateTime.DaysInMonth(year, month);
             int dayOfWeek = (int)new DateTime(year, month, 1).DayOfWeek;
@@ -33,18 +46,16 @@
                     else if (count < daysInMonth)
                     {
                         count++;
-                        var date = new DateTime(year, month, count); // Non-nullable DateTime
+                        var date = new DateTime(year, month, count);
                         <td>
                             @count
                             @foreach (var viewModel in Model)
                             {
                                 foreach (var task in viewModel.Tasks)
                                 {
-                                    // Ensure you are checking against a non-nullable DateTime here
                                     if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
                                     {
-                                        <div>@task.Description</div>
-
+                                        <div class="task">@task.Description</div>
                                     }
                                 }
                             }
@@ -58,6 +69,7 @@
             </tr>
         }
     </table>
+    <div style="height: 170px"></div>
 }
 
 <a asp-controller="home" asp-action="index" class="btn btn-primary">Go back home</a>

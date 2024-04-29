@@ -1,5 +1,12 @@
 ﻿<!DOCTYPE html>
-
+<style>
+    .navbar{ 
+        position: fixed !important; 
+        top: 0;
+        left: 0;
+        right: 0;
+    }
+</style>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,13 +15,16 @@
 </head>
 <body>
     <div class="container">
-        <header class="bg-primary text-white text-center">
-            <h1 class="m-3 p-3">My Tasks</h1>
-        </header>
+        <nav class="navbar navbar-expand-md navbar-primary bg-primary ps-3 pe-3">
+            <header class="bg-primary text-white text-center">
+            <h1 class="m-3 p-3">Calendar</h1>
+            </header>
+            <a asp-controller="home" asp-action="index" class="btn btn-primary">Home</a>
+            <a asp-action="january" class="btn btn-primary">Calendar</a>
+        </nav>
         <main>
             @RenderBody()
         </main>
     </div>
-    
 </body>
 </html>

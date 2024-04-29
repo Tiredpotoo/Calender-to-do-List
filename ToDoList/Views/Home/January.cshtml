@@ -2,20 +2,20 @@
 @{
     int year = 2024; // Set the year for the calendars
 }
-
 <style>
+    body{
+        margin-top: 180px !important;
+    }
     table {
         width: 100%;
         border-collapse: collapse;
     }
-
     th, td {
         border: 1px solid black;
         height: 75px;
         width: calc(100% / 7); /* Distribute width evenly among the 7 days */
         vertical-align: top; /* Align content to the top of the cell */
     }
-
     .task {
         max-height: 50px; /* Limit the height of the task content */
         overflow: hidden; /* Hide overflow if content exceeds max-height */
@@ -55,7 +55,7 @@
                                 {
                                     if (task.DueDate.HasValue && task.DueDate.Value.Date == date.Date)
                                     {
-                                        <div class="task">@task.Description</div>
+                                        <div class="task" onmouseover="showTooltip('@task.Description', event)" onmouseout="hideTooltip(event)">@task.Description</div>
                                     }
                                 }
                             }
@@ -71,5 +71,4 @@
     </table>
     <div style="height: 170px"></div>
 }
-
 <a asp-controller="home" asp-action="index" class="btn btn-primary">Go back home</a>
